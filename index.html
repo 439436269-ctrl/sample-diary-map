@@ -267,7 +267,7 @@ if(hasGL){
         ofm:{type:'vector',url:'https://tiles.openfreemap.org/planet'},
         rtes:{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:routeCoords}}},
         done:{type:'geojson',data:{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:[]}}},
-        pins:{type:'geojson',data:{type:'FeatureCollection',features:PINNED.map(e=>({id:e.n,properties:{n:e.n,c:e.c},geometry:{type:'Point',coordinates:e.loc}}))}}
+        pins:{type:'geojson',data:{type:'FeatureCollection',features:PINNED.map(e=>({id:e.n,properties:{n:e.n,c:e.c,pl:e.pl},geometry:{type:'Point',coordinates:e.loc}}))}}
       },
       layers:[
         {id:'bg',type:'background',paint:{'background-color':'#0C1014'}},
@@ -286,6 +286,9 @@ if(hasGL){
         {id:'pin-no',type:'symbol',source:'pins',
           layout:{'text-field':['get','n'],'text-font':['Noto Sans Regular'],'text-size':10,'text-offset':[0,-1.5],'text-anchor':'bottom'},
           paint:{'text-color':'#EAE4D6','text-halo-color':'rgba(12,16,20,.9)','text-halo-width':1.4}},
+        {id:'pin-active',type:'symbol',source:'pins',filter:['==',['get','n'],-1],
+          layout:{'text-field':['get','pl'],'text-font':['Noto Sans Bold'],'text-size':13.5,'text-anchor':'left','text-offset':[1,0],'text-allow-overlap':true},
+          paint:{'text-color':'#E8A33D','text-halo-color':'rgba(12,16,20,.95)','text-halo-width':1.8}},
         {id:'plabels',type:'symbol',source:'ofm','source-layer':'place',
           filter:['in',['get','class'],['literal',['country','city']]],maxzoom:8,
           layout:{'text-field':['get','name'],'text-font':['Noto Sans Regular'],'text-size':['interpolate',['linear'],['zoom'],1,7,6,12]},
@@ -344,8 +347,11 @@ function select(n,opts){
       const src=map.getSource('done');
       if(src)src.setData({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:routeCoords.slice(0,pinAt[pi]+1)}});
     }
+    const lbl=map.getLayer('pin-active');
+    if(lbl)map.setFilter('pin-active',['==',['get','n'],e.n]);
     if(!opts.silentFly){
-      map.flyTo({center:e.loc,zoom:Math.max(map.getZoom(),3.6),duration:wasFirst?3400:2800,
+      const z=opts.play?5.2:Math.max(map.getZoom(),3.6);
+      map.flyTo({center:e.loc,zoom:z,duration:opts.play?4000:(wasFirst?3400:2800),
         padding:{right:window.innerWidth>760?380:0,top:60,bottom:110}});
     }
   }
@@ -363,8 +369,11 @@ function setPlay(on){
   playing=on;clearInterval(timer);
   $('bplay').textContent=on?'⏸ 巡游':'▶ 巡游';$('bplay').classList.toggle('on',on);
   $('play').textContent=on?'⏸':'▶';
-  if(on){if(cur>=EPS.length-1)select(EPS[0].n,{silentFly:true});
-    timer=setInterval(()=>{if(cur>=EPS.length-1){setPlay(false);return}select(EPS[cur+1].n)},4600);}
+  if(on){
+    if(cur<0||cur>=EPS.length-1)select(EPS[0].n,{play:true});
+    else select(EPS[cur].n,{play:true});
+    timer=setInterval(()=>{if(cur>=EPS.length-1){setPlay(false);return}select(EPS[cur+1].n,{play:true})},5400);
+  }
 }
 $('bplay').onclick=()=>setPlay(!playing);
 $('play').onclick=()=>setPlay(!playing);
