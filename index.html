@@ -220,6 +220,7 @@ const fmtDate=p=>{const d=new Date((p+8*3600)*1000);return d.getUTCFullYear()+'-
 const fmtDur=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const fmtWan=v=>v>=1e8?(v/1e8).toFixed(2)+' 亿':(v/1e4).toFixed(1)+' 万';
 const PINNED=EPS.filter(e=>e.loc);
+EPS.forEach(e=>{const i=new Image();i.src='img/e'+String(e.n).padStart(2,'0')+'.jpg';});   // 预载封面，巡游切换不掉图
 const hasGL=typeof maplibregl!=='undefined';
 $('hdv').textContent=fmtWan(EPS.reduce((s,e)=>s+e.view,0));
 
