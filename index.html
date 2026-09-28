@@ -45,7 +45,7 @@ body{background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,'PingFang
   transform:translateX(calc(100% + 30px));transition:transform .38s cubic-bezier(.22,.9,.3,1);
   box-shadow:0 12px 40px rgba(0,0,0,.5)}
 #card.open{transform:none}
-#card .cover{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1A222D,#0F141B);flex:none}
+#card .cover{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#1A222D,#0F141B);flex:none;cursor:pointer}
 #card .cover img{width:100%;height:100%;object-fit:cover;display:block}
 #card .cover .epno{position:absolute;left:10px;top:10px;background:rgba(12,16,20,.82);border:1px solid var(--line);
   border-radius:8px;padding:2px 9px;font-size:12px;color:var(--amber);font-weight:700;letter-spacing:1px}
@@ -157,7 +157,7 @@ body.ready #boot{display:none}
 </div>
 
 <div id="card">
-  <div class="cover"><span class="epno" id="cno">EP 01</span><img id="cimg" alt=""></div>
+  <div class="cover" id="ccover" title="点击在 B 站打开这期视频"><span class="epno" id="cno">EP 01</span><img id="cimg" alt=""></div>
   <div class="bd">
     <div class="meta" id="cmeta"></div>
     <h2 id="ctitle"></h2>
@@ -372,6 +372,7 @@ function select(n,opts){
 }
 $('cprev').onclick=()=>{if(cur>0)select(EPS[cur-1].n)};
 $('cnext').onclick=()=>{if(cur<EPS.length-1)select(EPS[cur+1].n)};
+$('ccover').onclick=()=>{if(cur>=0)window.open('https://www.bilibili.com/video/'+EPS[cur].bv,'_blank')};
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'&&cur>0)select(EPS[cur-1].n);
   if(e.key==='ArrowRight'&&cur<EPS.length-1)select(EPS[cur+1].n);
