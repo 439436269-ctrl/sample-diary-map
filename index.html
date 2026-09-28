@@ -108,11 +108,24 @@ body{background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,'PingFang
 body.ready #boot{display:none}
 .hint{font-size:11px;color:var(--mut);margin-top:6px}
 @media (max-width:760px){
-  #hd{max-width:calc(100vw - 90px);padding:10px 13px}
-  #hd .legend{display:none}
-  #card{top:auto;bottom:76px;right:10px;left:10px;width:auto;max-height:58vh}
-  #list{top:64px;bottom:76px}
-  #tl{bottom:8px;padding:8px 12px 6px}
+  #hd{left:10px;top:10px;right:150px;max-width:none;padding:10px 12px 8px;border-radius:12px}
+  #hd h1{font-size:12.5px;line-height:1.45}
+  #hd .sub{font-size:10.5px;margin-top:2px}
+  #hd .legend,#hd .hint{display:none}
+  #ctls{top:10px;right:10px;gap:5px}
+  .btn{padding:8px 9px;font-size:14px;border-radius:8px}
+  .btn .lbl{display:none}
+  #card{left:8px;right:8px;top:auto;bottom:76px;width:auto;max-height:46vh;
+    transform:translateY(150%)}
+  #card.open{transform:none}
+  #card .cover{max-height:30vh}
+  #card .bd{padding:10px 12px 12px}
+  #card h2{font-size:14px}
+  #card .go a{padding:9px 0;font-size:13px;cursor:pointer}
+  #list{left:8px;right:8px;top:92px;bottom:76px;width:auto}
+  #tl{left:8px;right:8px;bottom:8px;width:auto;transform:none;padding:8px 12px 6px}
+  #track{height:42px}
+  #cred{display:none}
 }
 </style>
 </head>
@@ -133,8 +146,8 @@ body.ready #boot{display:none}
 </div>
 
 <div id="ctls">
-  <div class="btn" id="blist">☰ 目录</div>
-  <div class="btn" id="bplay">▶ 巡游</div>
+  <div class="btn" id="blist">☰ <span class="lbl">目录</span></div>
+  <div class="btn" id="bplay">▶ <span class="lbl">巡游</span></div>
   <div class="btn on" id="bglobe">🌐</div>
 </div>
 
@@ -350,8 +363,8 @@ function select(n,opts){
     if(lbl)map.setFilter('pin-active',['==',['get','n'],e.n]);
     if(!opts.silentFly){
       const z=opts.play?5.2:Math.max(map.getZoom(),3.6);
-      map.flyTo({center:e.loc,zoom:z,duration:opts.play?4000:(wasFirst?3400:2800),
-        padding:{right:window.innerWidth>760?380:0,top:60,bottom:110}});
+      const pad=window.innerWidth>760?{right:380,top:60,bottom:110}:{top:150,bottom:300};
+      map.flyTo({center:e.loc,zoom:z,duration:opts.play?4000:(wasFirst?3400:2800),padding:pad});
     }
   }
   history.replaceState(null,'','#ep='+e.bv);
@@ -366,7 +379,7 @@ document.addEventListener('keydown',e=>{
 // ---------- 巡游 ----------
 function setPlay(on){
   playing=on;clearInterval(timer);
-  $('bplay').textContent=on?'⏸ 巡游':'▶ 巡游';$('bplay').classList.toggle('on',on);
+  $('bplay').innerHTML=on?'⏸ <span class="lbl">巡游</span>':'▶ <span class="lbl">巡游</span>';$('bplay').classList.toggle('on',on);
   $('play').textContent=on?'⏸':'▶';
   if(on){
     if(cur<0||cur>=EPS.length-1)select(EPS[0].n,{play:true});
